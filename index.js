@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const PORT = 3001;
+const cors = require("cors");
+const PORT = process.env.PORT || 3001
 
 const persons = [
   {
@@ -25,11 +26,17 @@ const persons = [
     id: 4,
   },
 ];
-
-
+app.use(express.static('build'))
+app.use(cors());
 app.use(express.json());
-morgan.token('req-body', function (req, res) { return JSON.stringify(req.body) })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'));
+morgan.token("req-body", function (req, res) {
+  return JSON.stringify(req.body);
+});
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :req-body"
+  )
+);
 
 app.get("/", (req, res) => {
   res.status(200).end();

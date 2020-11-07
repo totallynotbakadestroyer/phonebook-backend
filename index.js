@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const logger = require("morgan");
 const PORT = 3001;
 
 const persons = [
@@ -26,6 +27,7 @@ const persons = [
 ];
 
 app.use(express.json());
+app.use(logger("dev"));
 
 app.get("/", (req, res) => {
   res.status(200).end();
@@ -38,7 +40,7 @@ app.get("/info", (req, res) => {
 });
 
 app.get("/api/persons", (req, res) => {
-  res.json(persons).send();
+  res.json(persons);
 });
 
 app.get("/api/persons/:id", (req, res) => {

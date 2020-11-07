@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const logger = require("morgan");
+const morgan = require("morgan");
 const PORT = 3001;
 
 const persons = [
@@ -26,8 +26,10 @@ const persons = [
   },
 ];
 
+
 app.use(express.json());
-app.use(logger("dev"));
+morgan.token('req-body', function (req, res) { return JSON.stringify(req.body) })
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'));
 
 app.get("/", (req, res) => {
   res.status(200).end();
@@ -62,7 +64,6 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.post("/api/persons", (req, res) => {
-  console.log(req.body);
   if (!req.body || !req.body.name || !req.body.number) {
     return res.status(400).json({
       error: "content missing",

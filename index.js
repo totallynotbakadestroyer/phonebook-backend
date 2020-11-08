@@ -81,17 +81,18 @@ app.post("/api/persons", (req, res, next) => {
   if (!req.body || !req.body.name || !req.body.number) {
     next({ name: "ContentMissing" });
   }
-  Person.findOne({ name: req.body.name }).then(() => {
-    Person({ ...req.body })
-      .save()
-      .then((result) => {
-        res.json(result);
-      });
-  });
+  Person({ ...req.body })
+    .save()
+    .then((result) => {
+      res.json(result);
+    });
 });
 
 app.put("/api/persons/:id", (req, res, next) => {
-  Person.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  Person.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  })
     .then((result) => {
       if (result) {
         res.json(result);
@@ -115,6 +116,9 @@ const errorHandler = (error, req, res, next) => {
   }
   if (error.name === "NotFound") {
     return res.status(404).json({ error: "not found" });
+  }
+  if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
 
   next(error);
